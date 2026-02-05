@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Perfiles</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" th:href="@{/lista.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Gestión de Perfiles</h1>
+        <p>Lista de todos los perfiles registrados</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/perfiles/nuevo" class="btn btn-primary">➕ Nuevo Perfil</a>
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
+
+    <div class="lista-section">
+        <h2>Perfiles Registrados</h2>
+        <div th:if="${perfiles != null and perfiles.size() > 0}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Teléfono</th>
+                        <th>Usuario Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="perfil : ${perfiles}">
+                        <td th:text="${perfil.id}"></td>
+                        <td th:text="${perfil.nombre}"></td>
+                        <td th:text="${perfil.apellido}"></td>
+                        <td th:text="${perfil.telefono}"></td>
+                        <td th:text="${perfil.usuario.email}"></td>
+                        <td>
+                            <a th:href="@{/perfiles/{id}(id=${perfil.id})}" class="btn btn-sm btn-info">👁 Ver</a>
+                            <a th:href="@{/perfiles/{id}/editar(id=${perfil.id})}" class="btn btn-sm btn-primary">✎ Editar</a>
+                            <a th:href="@{/perfiles/{id}/eliminar(id=${perfil.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${perfiles == null or perfiles.size() == 0}" class="empty-state">
+            <p>📭 No hay perfiles registrados</p>
+            <a href="/perfiles/nuevo" class="btn btn-primary">Crear el primer perfil</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

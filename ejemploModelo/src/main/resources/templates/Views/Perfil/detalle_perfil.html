@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Perfil</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Detalle del Perfil</h1>
+        <p>Información del perfil: <strong th:text="${perfil.nombre} + ' ' + ${perfil.apellido}"></strong></p>
+    </div>
+
+    <div class="detail-section">
+        <div class="detail-item">
+            <label>ID:</label>
+            <span th:text="${perfil.id}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Nombre:</label>
+            <span th:text="${perfil.nombre}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Apellido:</label>
+            <span th:text="${perfil.apellido}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Teléfono:</label>
+            <span th:text="${perfil.telefono}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Usuario Asociado:</label>
+            <span th:if="${perfil.usuario != null}" th:text="${perfil.usuario.email}"></span>
+            <span th:if="${perfil.usuario == null}">No asignado</span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a th:href="@{/perfiles/{id}/editar(id=${perfil.id})}" class="btn btn-primary">✎ Editar</a>
+        <a th:href="@{/perfiles/{id}/eliminar(id=${perfil.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+        <a href="/perfiles/listar" class="btn btn-secondary">← Volver a Lista</a>
+    </div>
+</div>
+</body>
+</html>

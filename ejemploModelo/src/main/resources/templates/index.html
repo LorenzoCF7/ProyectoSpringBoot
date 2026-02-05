@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Spring Boot</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Sistema de Gestión</h1>
+        <p>Bienvenido al proyecto final de Spring Boot</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/usuarios/listar" class="btn btn-primary">👥 Gestionar Usuarios</a>
+        <a href="/usuarios/nuevo" class="btn btn-secondary">➕ Nuevo Usuario</a>
+        <a href="/perfiles/listar" class="btn btn-primary">📝 Gestionar Perfiles</a>
+        <a href="/perfiles/nuevo" class="btn btn-secondary">➕ Nuevo Perfil</a>
+        <a href="/planes/listar" class="btn btn-primary">📋 Gestionar Planes</a>
+        <a href="/planes/nuevo" class="btn btn-secondary">➕ Nuevo Plan</a>
+        <a href="/suscripciones/listar" class="btn btn-primary">🔔 Gestionar Suscripciones</a>
+        <a href="/suscripciones/nuevo" class="btn btn-secondary">➕ Nueva Suscripción</a>
+        <a href="/facturas/listar" class="btn btn-primary">🧾 Gestionar Facturas</a>
+        <a href="/facturas/nuevo" class="btn btn-secondary">➕ Nueva Factura</a>
+        <a href="/pagos/listar" class="btn btn-primary">💳 Gestionar Pagos</a>
+        <a href="/pagos/nuevo" class="btn btn-secondary">➕ Nuevo Pago</a>
+    </div>
+</div>
+</body>
+</html>

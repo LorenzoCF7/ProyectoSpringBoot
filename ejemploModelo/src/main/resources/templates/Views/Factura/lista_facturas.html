@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Facturas</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" th:href="@{/lista.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Gestión de Facturas</h1>
+        <p>Lista de todas las facturas registradas</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/facturas/nuevo" class="btn btn-primary">➕ Nueva Factura</a>
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
+
+    <div class="lista-section">
+        <h2>Facturas Registradas</h2>
+        <div th:if="${facturas != null and facturas.size() > 0}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Fecha Emisión</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="factura : ${facturas}">
+                        <td th:text="${factura.id}"></td>
+                        <td th:text="${factura.descripcion}"></td>
+                        <td th:text="'$' + ${#numbers.formatDecimal(factura.monto, 1, 2)}"></td>
+                        <td th:text="${factura.fechaEmision}"></td>
+                        <td>
+                            <span class="status" th:classappend="${factura.pagada} ? 'active' : 'inactive'">
+                                <span th:text="${factura.pagada} ? '✓ Pagada' : '⏳ Pendiente'"></span>
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/facturas/{id}(id=${factura.id})}" class="btn btn-sm btn-info">👁 Ver</a>
+                            <a th:href="@{/facturas/{id}/editar(id=${factura.id})}" class="btn btn-sm btn-primary">✎ Editar</a>
+                            <a th:href="@{/facturas/{id}/eliminar(id=${factura.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${facturas == null or facturas.size() == 0}" class="empty-state">
+            <p>📭 No hay facturas registradas</p>
+            <a href="/facturas/nuevo" class="btn btn-primary">Crear la primera factura</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

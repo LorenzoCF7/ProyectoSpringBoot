@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Factura</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Nueva Factura</h1>
+        <p>Completa el formulario para crear una nueva factura</p>
+    </div>
+
+    <form th:action="@{/facturas/guardar}" th:object="${factura}" method="post">
+
+        <div class="form-group">
+            <label for="suscripcion">Suscripción Asociada:</label>
+            <select id="suscripcion" name="suscripcion" required>
+                <option value="" data-precio="0">-- Selecciona una suscripción --</option>
+                <option th:each="suscripcion : ${suscripciones}" 
+                        th:value="${suscripcion.id}" 
+                        th:data-precio="${suscripcion.plan != null ? suscripcion.plan.precio : 0}"
+                        th:text="${'ID: ' + suscripcion.id + ' - Usuario: ' + (suscripcion.usuario != null ? suscripcion.usuario.email : 'N/A') + ' - Plan: ' + (suscripcion.plan != null ? suscripcion.plan.nombre + ' ($' + suscripcion.plan.precio + ')' : 'N/A')}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" th:field="*{descripcion}" placeholder="Descripción de la factura" required>
+        </div>
+
+        <div class="form-group">
+            <label for="monto">Monto:</label>
+            <input type="number" id="monto" th:field="*{monto}" placeholder="Monto de la factura" step="0.01" required>
+            <small style="color: #6b7280;">Se autocompleta según el precio del plan (puedes modificarlo)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaEmision">Fecha de Emisión:</label>
+            <input type="date" id="fechaEmision" th:field="*{fechaEmision}" required>
+            <small style="color: #6b7280;">Fecha actual por defecto (puedes modificarla)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="pagada">
+                <input type="checkbox" id="pagada" th:field="*{pagada}">
+                Factura Pagada
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">✓ Guardar Factura</button>
+            <a href="/facturas/listar" class="btn btn-secondary">← Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Establecer fecha de emisión como hoy
+    const fechaEmisionInput = document.getElementById('fechaEmision');
+    const montoInput = document.getElementById('monto');
+    const suscripcionSelect = document.getElementById('suscripcion');
+    
+    // Función para formatear fecha a YYYY-MM-DD
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    // Establecer fecha de emisión como hoy
+    const hoy = new Date();
+    fechaEmisionInput.value = formatDate(hoy);
+    
+    // Actualizar monto cuando cambia la suscripción
+    suscripcionSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const precio = parseFloat(selectedOption.dataset.precio) || 0;
+        montoInput.value = precio.toFixed(2);
+    });
+</script>
+</body>
+</html>

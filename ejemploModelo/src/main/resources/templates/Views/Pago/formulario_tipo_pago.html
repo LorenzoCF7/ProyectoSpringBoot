@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Método de Pago</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 3rem auto;
+        }
+
+        .payment-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .payment-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .payment-card p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .payment-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Seleccionar Método de Pago</h1>
+            <p>Elige el método de pago que prefieres</p>
+        </div>
+
+        <div th:if="${facturas == null || facturas.isEmpty()}" class="alert alert-warning" style="background-color: #fef3c7; border: 1px solid #fbbf24; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center;">
+            <strong>⚠️ No hay facturas disponibles</strong>
+            <p style="margin: 0.5rem 0 0 0;">Para crear un pago, primero debes crear: Usuario → Plan → Suscripción → Factura</p>
+            <div style="margin-top: 1rem;">
+                <a href="/" class="btn btn-primary">Ir al Inicio</a>
+            </div>
+        </div>
+
+        <div class="payment-methods" th:unless="${facturas == null || facturas.isEmpty()}">
+            <div class="payment-card">
+                <div class="payment-icon">💳</div>
+                <h3>Tarjeta de Crédito</h3>
+                <p>Visa, Mastercard o American Express</p>
+                <a th:href="@{/pagos/tarjeta/nuevo}" class="btn btn-primary">Continuar con Tarjeta</a>
+            </div>
+
+            <div class="payment-card">
+                <div class="payment-icon">🅿️</div>
+                <h3>PayPal</h3>
+                <p>Pago rápido y seguro con PayPal</p>
+                <a th:href="@{/pagos/paypal/nuevo}" class="btn btn-primary">Continuar con PayPal</a>
+            </div>
+
+            <div class="payment-card">
+                <div class="payment-icon">🏦</div>
+                <h3>Transferencia Bancaria</h3>
+                <p>Transferencia bancaria directa</p>
+                <a th:href="@{/pagos/transferencia/nuevo}" class="btn btn-primary">Continuar con Transferencia</a>
+            </div>
+        </div>
+
+        <div class="nav-buttons" style="justify-content: center; margin-top: 3rem;">
+            <a th:href="@{/pagos/listar}" class="btn btn-secondary">Ver Mis Pagos</a>
+            <a th:href="@{/facturas/listar}" class="btn btn-secondary">Volver a Facturas</a>
+        </div>
+    </div>
+</body>
+</html>

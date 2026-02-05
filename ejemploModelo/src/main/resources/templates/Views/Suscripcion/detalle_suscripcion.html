@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Suscripción</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Detalle de la Suscripción</h1>
+        <p>ID: <strong th:text="${suscripcion.id}"></strong></p>
+    </div>
+
+    <div class="detail-section">
+        <div class="detail-item">
+            <label>ID:</label>
+            <span th:text="${suscripcion.id}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Usuario:</label>
+            <span th:if="${suscripcion.usuario != null}" th:text="${suscripcion.usuario.email}"></span>
+            <span th:if="${suscripcion.usuario == null}">No asignado</span>
+        </div>
+
+        <div class="detail-item">
+            <label>Plan:</label>
+            <span th:if="${suscripcion.plan != null}" th:text="${suscripcion.plan.nombre}"></span>
+            <span th:if="${suscripcion.plan == null}">No asignado</span>
+        </div>
+
+        <div class="detail-item">
+            <label>Estado:</label>
+            <span th:text="${suscripcion.estado}" class="status" th:classappend="${suscripcion.estado.name() == 'ACTIVA'} ? 'active' : 'inactive'"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Fecha de Inicio:</label>
+            <span th:text="${suscripcion.fechaInicio}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Fecha de Fin:</label>
+            <span th:text="${suscripcion.fechaFin != null} ? ${suscripcion.fechaFin} : 'No definida'"></span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a th:href="@{/suscripciones/{id}/editar(id=${suscripcion.id})}" class="btn btn-primary">✎ Editar</a>
+        <a th:href="@{/suscripciones/{id}/eliminar(id=${suscripcion.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+        <a href="/suscripciones/listar" class="btn btn-secondary">← Volver a Lista</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" th:href="@{/lista.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Gestión de Usuarios</h1>
+        <p>Lista de todos los usuarios registrados</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/usuarios/nuevo" class="btn btn-primary">➕ Nuevo Usuario</a>
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
+
+    <div class="lista-section">
+        <h2>Usuarios Registrados</h2>
+        <div th:if="${usuarios != null and usuarios.size() > 0}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.id}"></td>
+                        <td th:text="${usuario.email}"></td>
+                        <td>
+                            <span class="status" th:classappend="${usuario.activo} ? 'active' : 'inactive'">
+                                <span th:text="${usuario.activo} ? 'Activo' : 'Inactivo'"></span>
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/usuarios/{id}(id=${usuario.id})}" class="btn btn-sm btn-info">👁 Ver</a>
+                            <a th:href="@{/usuarios/{id}/editar(id=${usuario.id})}" class="btn btn-sm btn-primary">✎ Editar</a>
+                            <a th:href="@{/usuarios/{id}/eliminar(id=${usuario.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${usuarios == null or usuarios.size() == 0}" class="empty-state">
+            <p>📭 No hay usuarios registrados</p>
+            <a href="/usuarios/nuevo" class="btn btn-primary">Crear el primer usuario</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

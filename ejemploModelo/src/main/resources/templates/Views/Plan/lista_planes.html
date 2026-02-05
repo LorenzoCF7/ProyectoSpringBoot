@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Planes</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" th:href="@{/lista.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Gestión de Planes</h1>
+        <p>Lista de todos los planes registrados</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/planes/nuevo" class="btn btn-primary">➕ Nuevo Plan</a>
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
+
+    <div class="lista-section">
+        <h2>Planes Registrados</h2>
+        <div th:if="${planes != null and planes.size() > 0}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Duración (meses)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="plan : ${planes}">
+                        <td th:text="${plan.id}"></td>
+                        <td th:text="${plan.nombre}"></td>
+                        <td th:text="${plan.descripcion}"></td>
+                        <td th:text="${#numbers.formatDecimal(plan.precio, 1, 2)} + '€'"></td>
+                        <td th:text="${plan.duracionMeses}"></td>
+                        <td>
+                            <a th:href="@{/planes/{id}(id=${plan.id})}" class="btn btn-sm btn-info">👁 Ver</a>
+                            <a th:href="@{/planes/{id}/editar(id=${plan.id})}" class="btn btn-sm btn-primary">✎ Editar</a>
+                            <a th:href="@{/planes/{id}/eliminar(id=${plan.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${planes == null or planes.size() == 0}" class="empty-state">
+            <p>📭 No hay planes registrados</p>
+            <a href="/planes/nuevo" class="btn btn-primary">Crear el primer plan</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

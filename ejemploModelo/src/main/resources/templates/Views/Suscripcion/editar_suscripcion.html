@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Suscripción</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Editar Suscripción</h1>
+        <p>Actualiza la información de la suscripción</p>
+    </div>
+
+    <form th:action="@{/suscripciones/{id}/actualizar(id=${suscripcion.id})}" th:object="${suscripcion}" method="post">
+        <div class="form-group">
+            <label for="usuario">Usuario Asociado:</label>
+            <select id="usuario" name="usuario" required>
+                <option value="">-- Selecciona un usuario --</option>
+                <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" 
+                        th:text="${usuario.email}"
+                        th:selected="${suscripcion.usuario != null and suscripcion.usuario.id == usuario.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="plan">Plan Asociado:</label>
+            <select id="plan" name="plan" required>
+                <option value="">-- Selecciona un plan --</option>
+                <option th:each="plan : ${planes}" th:value="${plan.id}" 
+                        th:text="${plan.nombre}"
+                        th:selected="${suscripcion.plan != null and suscripcion.plan.id == plan.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <select id="estado" th:field="*{estado}" required>
+                <option value="">-- Selecciona un estado --</option>
+                <option value="ACTIVA">Activa</option>
+                <option value="CANCELADA">Cancelada</option>
+                <option value="MOROSA">Morosa</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaInicio">Fecha Inicio:</label>
+            <input type="date" id="fechaInicio" th:field="*{fechaInicio}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaFin">Fecha Fin:</label>
+            <input type="date" id="fechaFin" th:field="*{fechaFin}">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">✓ Guardar Cambios</button>
+            <a th:href="@{/suscripciones/{id}(id=${suscripcion.id})}" class="btn btn-secondary">← Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

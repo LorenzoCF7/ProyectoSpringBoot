@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago por Transferencia</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Pago por Transferencia Bancaria</h1>
+            <p>Ingresa los datos de tu transferencia</p>
+        </div>
+
+        <div th:if="${facturas == null || facturas.isEmpty()}" class="alert alert-warning" style="background-color: #fef3c7; border: 1px solid #fbbf24; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <strong>⚠️ No hay facturas disponibles</strong>
+            <p style="margin: 0.5rem 0 0 0;">Para crear un pago, primero debes crear: Usuario → Plan → Suscripción → Factura</p>
+        </div>
+
+        <form th:action="@{/pagos/transferencia/guardar}" method="POST" th:unless="${facturas == null || facturas.isEmpty()}">
+            <div class="form-group">
+                <label for="factura">Factura *</label>
+                <select id="factura" name="factura" required>
+                    <option value="" data-monto="0">Selecciona una factura</option>
+                    <option th:each="factura : ${facturas}" 
+                            th:value="${factura.id}" 
+                            th:data-monto="${factura.monto}"
+                            th:text="${'Factura ' + factura.id + ' - $' + factura.monto}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="monto">Monto *</label>
+                <input type="number" id="monto" name="monto" step="0.01" required placeholder="0.00">
+                <small style="color: #6b7280;">Se autocompleta según la factura (puedes modificarlo)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaPago">Fecha de Pago *</label>
+                <input type="date" id="fechaPago" name="fechaPago" required>
+                <small style="color: #6b7280;">Fecha actual por defecto (puedes modificarla)</small>
+            </div>
+
+            <div style="border-top: 2px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary);">Datos de la Transferencia</h3>
+
+                <div class="form-group">
+                    <label for="numeroCuentaOrigen">Número de Cuenta Origen *</label>
+                    <input type="text" id="numeroCuentaOrigen" name="numeroCuentaOrigen" placeholder="Número de tu cuenta bancaria" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="numeroCuentaDestino">Número de Cuenta Destino *</label>
+                    <input type="text" id="numeroCuentaDestino" name="numeroCuentaDestino" placeholder="Cuenta de destino" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bancoOrigen">Banco de Origen *</label>
+                    <input type="text" id="bancoOrigen" name="bancoOrigen" placeholder="Nombre de tu banco" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bancoDestino">Banco de Destino *</label>
+                    <input type="text" id="bancoDestino" name="bancoDestino" placeholder="Banco de destino" required>
+                </div>
+
+                <div style="background-color: var(--primary-light); padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
+                    <p style="color: var(--primary); font-size: 0.9rem; margin: 0;">
+                        <strong>Nota:</strong> Completa la transferencia bancaria dentro de 24 horas para confirmar el pago.
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Registrar Transferencia</button>
+                <a th:href="@{/pagos/nuevo}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+<script>
+    const facturaSelect = document.getElementById('factura');
+    const montoInput = document.getElementById('monto');
+    const fechaPagoInput = document.getElementById('fechaPago');
+    
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    const hoy = new Date();
+    fechaPagoInput.value = formatDate(hoy);
+    
+    if (facturaSelect) {
+        facturaSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const monto = parseFloat(selectedOption.dataset.monto) || 0;
+            montoInput.value = monto.toFixed(2);
+        });
+    }
+</script>
+</body>
+</html>

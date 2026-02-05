@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Suscripción</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Nueva Suscripción</h1>
+        <p>Completa el formulario para crear una nueva suscripción</p>
+    </div>
+
+    <form th:action="@{/suscripciones/guardar}" th:object="${suscripcion}" method="post">
+        <div class="form-group">
+            <label for="usuario">Usuario Asociado:</label>
+            <select id="usuario" name="usuario" required>
+                <option value="">-- Selecciona un usuario --</option>
+                <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.email}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="plan">Plan Asociado:</label>
+            <select id="plan" name="plan" required>
+                <option value="" data-duracion="0">-- Selecciona un plan --</option>
+                <option th:each="plan : ${planes}" th:value="${plan.id}" 
+                        th:data-duracion="${plan.duracionMeses}"
+                        th:text="${plan.nombre + ' (' + plan.duracionMeses + ' meses - $' + plan.precio + ')'}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <select id="estado" th:field="*{estado}" required>
+                <option value="">-- Selecciona un estado --</option>
+                <option value="ACTIVA">Activa</option>
+                <option value="CANCELADA">Cancelada</option>
+                <option value="MOROSA">Morosa</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaInicio">Fecha Inicio:</label>
+            <input type="date" id="fechaInicio" th:field="*{fechaInicio}" required>
+            <small style="color: #6b7280;">Fecha actual por defecto (puedes modificarla)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaFin">Fecha Fin:</label>
+            <input type="date" id="fechaFin" th:field="*{fechaFin}">
+            <small style="color: #6b7280;">Se calcula según la duración del plan (puedes modificarla)</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">✓ Guardar Suscripción</button>
+            <a href="/suscripciones/listar" class="btn btn-secondary">← Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Establecer fecha de inicio como hoy
+    const fechaInicioInput = document.getElementById('fechaInicio');
+    const fechaFinInput = document.getElementById('fechaFin');
+    const planSelect = document.getElementById('plan');
+    
+    // Función para formatear fecha a YYYY-MM-DD
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    // Establecer fecha de inicio como hoy
+    const hoy = new Date();
+    fechaInicioInput.value = formatDate(hoy);
+    
+    // Calcular fecha fin cuando cambia el plan
+    planSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const duracionMeses = parseInt(selectedOption.dataset.duracion) || 0;
+        
+        if (duracionMeses > 0) {
+            const fechaFin = new Date(hoy);
+            fechaFin.setMonth(fechaFin.getMonth() + duracionMeses);
+            fechaFinInput.value = formatDate(fechaFin);
+        } else {
+            fechaFinInput.value = '';
+        }
+    });
+</script>
+</body>
+</html>

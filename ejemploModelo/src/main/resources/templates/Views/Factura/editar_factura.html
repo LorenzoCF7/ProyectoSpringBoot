@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Factura</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Editar Factura</h1>
+        <p>Actualiza la información de la factura</p>
+    </div>
+
+    <form th:action="@{/facturas/{id}/actualizar(id=${factura.id})}" th:object="${factura}" method="post">
+
+        <div class="form-group">
+            <label for="suscripcion">Suscripción Asociada:</label>
+            <select id="suscripcion" name="suscripcion" required>
+                <option value="">-- Selecciona una suscripción --</option>
+                <option th:each="suscripcion : ${suscripciones}" th:value="${suscripcion.id}"
+                        th:text="${'ID: ' + suscripcion.id + ' - Usuario: ' + (suscripcion.usuario != null ? suscripcion.usuario.email : 'N/A') + ' - Plan: ' + (suscripcion.plan != null ? suscripcion.plan.nombre : 'N/A')}"
+                        th:selected="${factura.suscripcion != null and factura.suscripcion.id == suscripcion.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" th:field="*{descripcion}" placeholder="Descripción de la factura" required>
+        </div>
+
+        <div class="form-group">
+            <label for="monto">Monto:</label>
+            <input type="number" id="monto" th:field="*{monto}" placeholder="Monto de la factura" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaEmision">Fecha de Emisión:</label>
+            <input type="date" id="fechaEmision" th:field="*{fechaEmision}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="pagada">
+                <input type="checkbox" id="pagada" th:field="*{pagada}">
+                Factura Pagada
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">✓ Guardar Cambios</button>
+            <a th:href="@{/facturas/{id}(id=${factura.id})}" class="btn btn-secondary">← Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

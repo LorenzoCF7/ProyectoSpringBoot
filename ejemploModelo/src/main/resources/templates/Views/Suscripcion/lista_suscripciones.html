@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Suscripciones</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" th:href="@{/lista.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Gestión de Suscripciones</h1>
+        <p>Lista de todas las suscripciones registradas</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/suscripciones/nuevo" class="btn btn-primary">➕ Nueva Suscripción</a>
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
+
+    <div class="lista-section">
+        <h2>Suscripciones Registradas</h2>
+        <div th:if="${suscripciones != null and suscripciones.size() > 0}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Plan</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="suscripcion : ${suscripciones}">
+                        <td th:text="${suscripcion.id}"></td>
+                        <td th:text="${suscripcion.usuario != null ? suscripcion.usuario.email : 'N/A'}"></td>
+                        <td th:text="${suscripcion.plan != null ? suscripcion.plan.nombre : 'N/A'}"></td>
+                        <td th:text="${suscripcion.fechaInicio}"></td>
+                        <td th:text="${suscripcion.fechaFin}"></td>
+                        <td>
+                            <span th:text="${suscripcion.estado}" class="status" th:classappend="${suscripcion.estado.name() == 'ACTIVA'} ? 'active' : 'inactive'"></span>
+                        </td>
+                        <td>
+                            <a th:href="@{/suscripciones/{id}(id=${suscripcion.id})}" class="btn btn-sm btn-info">👁 Ver</a>
+                            <a th:href="@{/suscripciones/{id}/editar(id=${suscripcion.id})}" class="btn btn-sm btn-primary">✎ Editar</a>
+                            <a th:href="@{/suscripciones/{id}/eliminar(id=${suscripcion.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${suscripciones == null or suscripciones.size() == 0}" class="empty-state">
+            <p>📭 No hay suscripciones registradas</p>
+            <a href="/suscripciones/nuevo" class="btn btn-primary">Crear la primera suscripción</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

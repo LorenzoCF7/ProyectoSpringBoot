@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Plan</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Editar Plan</h1>
+        <p>Actualiza la información del plan</p>
+    </div>
+
+    <form th:action="@{/planes/{id}/actualizar(id=${plan.id})}" th:object="${plan}" method="post">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre del plan" required>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" th:field="*{descripcion}" placeholder="Descripción del plan" required>
+        </div>
+
+        <div class="form-group">
+            <label for="precio">Precio:</label>
+            <input type="number" id="precio" th:field="*{precio}" placeholder="Precio del plan" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="duracionMeses">Duración (meses):</label>
+            <input type="number" id="duracionMeses" th:field="*{duracionMeses}" placeholder="Duración en meses del plan" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">✓ Guardar Cambios</button>
+            <a th:href="@{/planes/{id}(id=${plan.id})}" class="btn btn-secondary">← Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

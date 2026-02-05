@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Factura</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Detalle de la Factura</h1>
+        <p>Factura #<strong th:text="${factura.id}"></strong></p>
+    </div>
+
+    <div class="detail-section">
+        <div class="detail-item">
+            <label>ID:</label>
+            <span th:text="${factura.id}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Descripción:</label>
+            <span th:text="${factura.descripcion}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Monto:</label>
+            <span th:text="'$' + ${#numbers.formatDecimal(factura.monto, 1, 2)}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Fecha de Emisión:</label>
+            <span th:text="${factura.fechaEmision}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Estado de Pago:</label>
+            <span th:text="${factura.pagada} ? 'Pagada' : 'Pendiente'" 
+                  class="status" th:classappend="${factura.pagada} ? 'active' : 'inactive'"></span>
+        </div>
+
+        <div class="detail-item" th:if="${factura.suscripcion != null}">
+            <label>Suscripción Asociada:</label>
+            <span th:text="${factura.suscripcion.usuario.email} + ' - ' + ${factura.suscripcion.plan.nombre}"></span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a th:href="@{/facturas/{id}/editar(id=${factura.id})}" class="btn btn-primary">✎ Editar</a>
+        <a th:href="@{/facturas/{id}/eliminar(id=${factura.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+        <a href="/facturas/listar" class="btn btn-secondary">← Volver a Lista</a>
+    </div>
+</div>
+</body>
+</html>

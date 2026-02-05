@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pagos</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Gestión de Pagos</h1>
+            <p>Lista de todos los pagos realizados</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a th:href="@{/pagos/nuevo}" class="btn btn-primary">+ Nuevo Pago</a>
+            <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+        </div>
+
+        <div class="lista-section" th:if="${not #lists.isEmpty(pagos)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipo de Pago</th>
+                        <th>Factura</th>
+                        <th>Monto</th>
+                        <th>Fecha de Pago</th>
+                        <th>Detalles Específicos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pago : ${pagos}">
+                        <td th:text="${pago.id}"></td>
+                        <td>
+                            <span th:if="${pago.tipoPago == 'TARJETA'}" class="status active">Tarjeta</span>
+                            <span th:if="${pago.tipoPago == 'PAYPAL'}" class="status active">PayPal</span>
+                            <span th:if="${pago.tipoPago == 'TRANSFERENCIA'}" class="status active">Transferencia</span>
+                        </td>
+                        <td th:text="${pago.factura != null ? 'Factura #' + pago.factura.id : 'N/A'}"></td>
+                        <td th:text="${pago.monto != null ? '$' + pago.monto : 'N/A'}"></td>
+                        <td th:text="${pago.fechaPago != null ? pago.fechaPago : 'N/A'}"></td>
+                        <td>
+                            <span th:if="${pago.tipoPago == 'TARJETA'}">Tarjeta de crédito</span>
+                            <span th:if="${pago.tipoPago == 'PAYPAL'}">Cuenta PayPal</span>
+                            <span th:if="${pago.tipoPago == 'TRANSFERENCIA'}">Transferencia bancaria</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/pagos/{id}(id=${pago.id})}" class="btn btn-info btn-sm">Ver</a>
+                            <a th:href="@{/pagos/{id}/eliminar(id=${pago.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(pagos)}">
+            <p>No hay pagos registrados.</p>
+            <a th:href="@{/pagos/nuevo}" class="btn btn-primary">Crear Nuevo Pago</a>
+        </div>
+    </div>
+</body>
+</html>

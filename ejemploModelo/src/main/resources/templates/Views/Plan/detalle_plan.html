@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Plan</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Detalle del Plan</h1>
+        <p>Información del plan: <strong th:text="${plan.nombre}"></strong></p>
+    </div>
+
+    <div class="detail-section">
+        <div class="detail-item">
+            <label>ID:</label>
+            <span th:text="${plan.id}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Nombre:</label>
+            <span th:text="${plan.nombre}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Descripción:</label>
+            <span th:text="${plan.descripcion}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Precio:</label>
+            <span th:text="'$' + ${#numbers.formatDecimal(plan.precio, 1, 2)}"></span>
+        </div>
+
+        <div class="detail-item">
+            <label>Duración (meses):</label>
+            <span th:text="${plan.duracionMeses}"></span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a th:href="@{/planes/{id}/editar(id=${plan.id})}" class="btn btn-primary">✎ Editar</a>
+        <a th:href="@{/planes/{id}/eliminar(id=${plan.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+        <a href="/planes/listar" class="btn btn-secondary">← Volver a Lista</a>
+    </div>
+</div>
+</body>
+</html>

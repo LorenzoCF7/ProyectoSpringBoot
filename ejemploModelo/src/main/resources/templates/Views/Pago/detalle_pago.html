@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pago</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Detalle del Pago</h1>
+            <p>Información del pago realizado</p>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-item">
+                <label>ID del Pago</label>
+                <span th:text="${pago.id}"></span>
+            </div>
+
+            <div class="detail-item">
+                <label>Monto</label>
+                <span th:text="${pago.monto != null ? '$' + pago.monto : 'N/A'}"></span>
+            </div>
+
+            <div class="detail-item">
+                <label>Fecha de Pago</label>
+                <span th:text="${pago.fechaPago != null ? pago.fechaPago : 'N/A'}"></span>
+            </div>
+
+            <div class="detail-item">
+                <label>Factura Relacionada</label>
+                <span th:text="${pago.factura != null ? 'Factura #' + pago.factura.id : 'N/A'}"></span>
+            </div>
+
+            <!-- Detalles específicos por tipo de pago -->
+            <div th:if="${pago.tipoPago == 'TARJETA'}" style="border-top: 2px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary);">Detalles de Tarjeta</h3>
+
+                <div class="detail-item" th:if="${pago.numeroTarjeta != null}">
+                    <label>Número de Tarjeta</label>
+                    <span th:text="${pago.numeroTarjeta}"></span>
+                </div>
+
+                <div class="detail-item" th:if="${pago.nombreTitular != null}">
+                    <label>Nombre del Titular</label>
+                    <span th:text="${pago.nombreTitular}"></span>
+                </div>
+
+                <div class="detail-item" th:if="${pago.fechaExpiracion != null}">
+                    <label>Fecha de Vencimiento</label>
+                    <span th:text="${pago.fechaExpiracion}"></span>
+                </div>
+            </div>
+
+            <div th:if="${pago.tipoPago == 'PAYPAL'}" style="border-top: 2px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary);">Detalles de PayPal</h3>
+
+                <div class="detail-item" th:if="${pago.emailCuenta != null}">
+                    <label>Correo de PayPal</label>
+                    <span th:text="${pago.emailCuenta}"></span>
+                </div>
+            </div>
+
+            <div th:if="${pago.tipoPago == 'TRANSFERENCIA'}" style="border-top: 2px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary);">Detalles de Transferencia</h3>
+
+                <div class="detail-item" th:if="${pago.numeroCuentaOrigen != null}">
+                    <label>Número de Cuenta Origen</label>
+                    <span th:text="${pago.numeroCuentaOrigen}"></span>
+                </div>
+
+                <div class="detail-item" th:if="${pago.numeroCuentaDestino != null}">
+                    <label>Número de Cuenta Destino</label>
+                    <span th:text="${pago.numeroCuentaDestino}"></span>
+                </div>
+
+                <div class="detail-item" th:if="${pago.bancoOrigen != null}">
+                    <label>Banco de Origen</label>
+                    <span th:text="${pago.bancoOrigen}"></span>
+                </div>
+
+                <div class="detail-item" th:if="${pago.bancoDestino != null}">
+                    <label>Banco de Destino</label>
+                    <span th:text="${pago.bancoDestino}"></span>
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 2rem;">
+                <a th:href="@{/pagos/listar}" class="btn btn-primary">Volver a Listado</a>
+                <a th:href="@{/pagos/{id}/eliminar(id=${pago.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
