@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.ejemploModelo.Models.Perfil;
+import com.example.ejemploModelo.Models.Usuario;
 import com.example.ejemploModelo.TaskRepository.PerfilRepository;
 
 @Service
@@ -22,6 +23,10 @@ public class PerfilService {
 
     public List<Perfil> listarPerfiles() {
         return serviceRepository.findAll();
+    }
+
+    public List<Perfil> listarPerfilesPorUsuario(Usuario usuario) {
+        return serviceRepository.findByUsuario(usuario);
     }
 
     public Optional<Perfil> obtenerPorId(Long id) {

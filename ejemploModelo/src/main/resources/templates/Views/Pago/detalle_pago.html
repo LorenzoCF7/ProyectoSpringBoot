@@ -21,7 +21,7 @@
 
             <div class="detail-item">
                 <label>Monto</label>
-                <span th:text="${pago.monto != null ? '$' + pago.monto : 'N/A'}"></span>
+                <span th:text="${pago.monto != null ? pago.monto + '€' : 'N/A'}"></span>
             </div>
 
             <div class="detail-item">

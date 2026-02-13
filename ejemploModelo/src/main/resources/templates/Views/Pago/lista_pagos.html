@@ -40,7 +40,7 @@
                             <span th:if="${pago.tipoPago == 'TRANSFERENCIA'}" class="status active">Transferencia</span>
                         </td>
                         <td th:text="${pago.factura != null ? 'Factura #' + pago.factura.id : 'N/A'}"></td>
-                        <td th:text="${pago.monto != null ? '$' + pago.monto : 'N/A'}"></td>
+                        <td th:text="${pago.monto != null ? pago.monto + '€' : 'N/A'}"></td>
                         <td th:text="${pago.fechaPago != null ? pago.fechaPago : 'N/A'}"></td>
                         <td>
                             <span th:if="${pago.tipoPago == 'TARJETA'}">Tarjeta de crédito</span>

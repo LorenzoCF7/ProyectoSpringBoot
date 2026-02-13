@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.ejemploModelo.Models.PagoTarjeta;
 import com.example.ejemploModelo.Models.PagoPaypa;
 import com.example.ejemploModelo.Models.PagoTransferencia;
+import com.example.ejemploModelo.Service.AuditoriaService;
 import com.example.ejemploModelo.Service.PagoService;
 import com.example.ejemploModelo.Service.FacturaService;
 
@@ -20,10 +21,12 @@ import com.example.ejemploModelo.Service.FacturaService;
 public class PagoController {
     private final PagoService pagoService;
     private final FacturaService facturaService;
+    private final AuditoriaService auditoriaService;
 
-    public PagoController(PagoService pagoService, FacturaService facturaService) {
+    public PagoController(PagoService pagoService, FacturaService facturaService, AuditoriaService auditoriaService) {
         this.pagoService = pagoService;
         this.facturaService = facturaService;
+        this.auditoriaService = auditoriaService;
     }
 
     // Mostrar formulario para seleccionar tipo de pago
@@ -88,6 +91,14 @@ public class PagoController {
             }
             pago.setFactura(facturaObj.get());
             pagoService.guardarPago(pago);
+            
+            // Marcar la factura como pagada automáticamente
+            var facturaPagar = facturaObj.get();
+            facturaPagar.setPagada(true);
+            facturaService.guardarFactura(facturaPagar);
+            
+            auditoriaService.registrar("CREAR", "Pago", pago.getId(),
+                "Pago con tarjeta - Monto: " + pago.getMonto() + " - Factura #" + factura + " marcada como pagada");
             return "redirect:/pagos/listar";
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,6 +116,14 @@ public class PagoController {
             }
             pago.setFactura(facturaObj.get());
             pagoService.guardarPago(pago);
+            
+            // Marcar la factura como pagada automáticamente
+            var facturaPagar = facturaObj.get();
+            facturaPagar.setPagada(true);
+            facturaService.guardarFactura(facturaPagar);
+            
+            auditoriaService.registrar("CREAR", "Pago", pago.getId(),
+                "Pago con PayPal - Monto: " + pago.getMonto() + " - Factura #" + factura + " marcada como pagada");
             return "redirect:/pagos/listar";
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,6 +141,14 @@ public class PagoController {
             }
             pago.setFactura(facturaObj.get());
             pagoService.guardarPago(pago);
+            
+            // Marcar la factura como pagada automáticamente
+            var facturaPagar = facturaObj.get();
+            facturaPagar.setPagada(true);
+            facturaService.guardarFactura(facturaPagar);
+            
+            auditoriaService.registrar("CREAR", "Pago", pago.getId(),
+                "Pago con transferencia - Monto: " + pago.getMonto() + " - Factura #" + factura + " marcada como pagada");
             return "redirect:/pagos/listar";
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,6 +184,7 @@ public class PagoController {
     @GetMapping("/{id}/eliminar")
     public String eliminarPago(@PathVariable Long id) {
         pagoService.eliminarPago(id);
+        auditoriaService.registrar("ELIMINAR", "Pago", id, "Pago eliminado");
         return "redirect:/pagos/listar";
     }
 }

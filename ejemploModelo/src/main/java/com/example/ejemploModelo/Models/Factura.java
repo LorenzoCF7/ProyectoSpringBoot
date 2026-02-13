@@ -2,6 +2,8 @@ package com.example.ejemploModelo.Models;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import jakarta.persistence.OneToOne;
 
 
 @Entity
+@Audited
 public class Factura {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +26,10 @@ public class Factura {
     private boolean pagada;
     @OneToOne(fetch = jakarta.persistence.FetchType.EAGER)
     @JoinColumn(name = "suscripcion_id", nullable = false)
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Suscripcion suscripcion;
+    private Double impuesto; // Monto del impuesto
+    private Double montoConImpuesto; // Monto total con impuestos
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -37,5 +43,9 @@ public class Factura {
     public void setPagada(boolean pagada) { this.pagada = pagada; }
     public Suscripcion getSuscripcion() { return suscripcion; }
     public void setSuscripcion(Suscripcion suscripcion) { this.suscripcion = suscripcion; }
+    public Double getImpuesto() { return impuesto; }
+    public void setImpuesto(Double impuesto) { this.impuesto = impuesto; }
+    public Double getMontoConImpuesto() { return montoConImpuesto; }
+    public void setMontoConImpuesto(Double montoConImpuesto) { this.montoConImpuesto = montoConImpuesto; }
     
 }

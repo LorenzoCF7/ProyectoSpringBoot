@@ -2,10 +2,13 @@ package com.example.ejemploModelo.Models;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import jakarta.persistence.*;
 
 @Entity
+@Audited
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo")
 public abstract class Pago {
@@ -17,6 +20,7 @@ public abstract class Pago {
     private LocalDate fechaPago;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "factura_id")
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Factura factura;
     
     public Long getId() { return id; }

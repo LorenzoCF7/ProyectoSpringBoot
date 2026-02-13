@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Auditoría</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header" style="text-align: center;">
+        <h1 th:if="${suscripcion != null}">Historial de tu Suscripción</h1>
+        <h1 th:if="${suscripcion == null}">Panel de Auditoría</h1>
+        <p th:if="${suscripcion != null}">Todos los cambios realizados en tu suscripción</p>
+        <p th:if="${suscripcion == null}">Historial de cambios del sistema</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a th:if="${suscripcion != null}" th:href="@{/suscripciones/{id}(id=${suscripcion.id})}" class="btn btn-secondary">← Volver a Mi Suscripción</a>
+        <a th:if="${suscripcion == null}" href="/" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+
+    <!-- Filtros (solo para admin en panel general) -->
+    <div th:if="${suscripcion == null}" class="lista-section" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Filtrar registros</h3>
+        <form method="get" th:action="@{/admin/auditoria}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; background: transparent; box-shadow: none; padding: 0; max-width: 100%;">
+            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                <label for="entidad">Por entidad</label>
+                <select id="entidad" name="entidad">
+                    <option value="">-- Todas --</option>
+                    <option value="Usuario" th:selected="${filtroEntidad == 'Usuario'}">Usuario</option>
+                    <option value="Perfil" th:selected="${filtroEntidad == 'Perfil'}">Perfil</option>
+                    <option value="Plan" th:selected="${filtroEntidad == 'Plan'}">Plan</option>
+                    <option value="Suscripcion" th:selected="${filtroEntidad == 'Suscripcion'}">Suscripción</option>
+                    <option value="Factura" th:selected="${filtroEntidad == 'Factura'}">Factura</option>
+                    <option value="Pago" th:selected="${filtroEntidad == 'Pago'}">Pago</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                <label for="usuario">Por usuario (email)</label>
+                <input type="text" id="usuario" name="usuario" th:value="${filtroUsuario}" placeholder="email@ejemplo.com">
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                <a th:href="@{/admin/auditoria}" class="btn btn-secondary btn-sm">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de logs -->
+    <div class="lista-section">
+        <h2>Registros de Auditoría</h2>
+        <div th:if="${#lists.isEmpty(logs)}" class="empty-state">
+            <p>No hay registros de auditoría</p>
+        </div>
+        <table th:unless="${#lists.isEmpty(logs)}">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Entidad</th>
+                    <th>ID</th>
+                    <th>Detalles</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="log : ${logs}">
+                    <td>
+                        <span th:text="${#temporals.format(log.fecha, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                    </td>
+                    <td th:text="${log.usuarioEmail}"></td>
+                    <td>
+                        <span class="status" 
+                              th:classappend="${log.accion == 'CREAR'} ? 'active' : (${log.accion == 'ELIMINAR'} ? 'inactive' : '')"
+                              th:text="${log.accion}"></span>
+                    </td>
+                    <td th:text="${log.entidad}"></td>
+                    <td th:text="${log.entidadId}"></td>
+                    <td th:text="${log.detalles}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

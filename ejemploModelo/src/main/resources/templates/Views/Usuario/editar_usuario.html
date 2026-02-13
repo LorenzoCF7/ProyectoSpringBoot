@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuario</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
+
 <body>
-<div class="container">
-    <div class="header">
-        <h1>Editar Usuario</h1>
-        <p>Actualiza la información del usuario</p>
+    <div class="container">
+        <div class="header">
+            <h1>Editar Usuario</h1>
+            <p>Actualiza la información del usuario</p>
+        </div>
+
+        <form th:action="@{/usuarios/{id}/actualizar(id=${usuario.id})}" th:object="${usuario}" method="post">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="correo@ejemplo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" th:field="*{password}"
+                    placeholder="Ingrese la nueva contraseña (dejar vacío si no desea cambiar)">
+            </div>
+
+            <div class="form-group"> <label for="pais">País:</label> <select id="pais" th:field="*{pais}" required>
+                    <option value="">-- Selecciona un país --</option>
+                    <option th:each="pais : ${paises}" th:value="${pais}" th:text="${pais}"
+                        th:selected="${pais} == ${usuario.pais}"></option>
+                </select> </div>
+
+            <div class="form-group">
+                <label for="activo">
+                    <input type="checkbox" id="activo" th:field="*{activo}">
+                    Usuario Activo
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">✓ Guardar Cambios</button>
+                <a th:href="@{/usuarios/{id}(id=${usuario.id})}" class="btn btn-secondary">← Cancelar</a>
+            </div>
+        </form>
     </div>
-
-    <form th:action="@{/usuarios/{id}/actualizar(id=${usuario.id})}" th:object="${usuario}" method="post">
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" th:field="*{email}" placeholder="correo@ejemplo.com" required>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" th:field="*{password}" placeholder="Ingrese la nueva contraseña (dejar vacío si no desea cambiar)">
-        </div>
-
-        <div class="form-group">
-            <label for="activo">
-                <input type="checkbox" id="activo" th:field="*{activo}">
-                Usuario Activo
-            </label>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">✓ Guardar Cambios</button>
-            <a th:href="@{/usuarios/{id}(id=${usuario.id})}" class="btn btn-secondary">← Cancelar</a>
-        </div>
-    </form>
-</div>
 </body>
+
 </html>

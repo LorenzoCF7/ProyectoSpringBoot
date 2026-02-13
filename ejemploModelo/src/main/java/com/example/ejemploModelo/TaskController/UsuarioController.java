@@ -5,6 +5,7 @@
 package com.example.ejemploModelo.TaskController;
 
 import com.example.ejemploModelo.Models.Usuario;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,22 +13,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.example.ejemploModelo.Service.AuditoriaService;
 import com.example.ejemploModelo.Service.UsuarioService;
+import com.example.ejemploModelo.Models.Paises;
 
 @Controller
 @RequestMapping("/usuarios")
+@PreAuthorize("hasRole('ADMIN')")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, AuditoriaService auditoriaService) {
         this.usuarioService = usuarioService;
+        this.auditoriaService = auditoriaService;
     }
 
     // Mostrar formulario
     @GetMapping("/nuevo")
     public String mostrarFormulario(Model model) {
         model.addAttribute("usuario", new Usuario());
+        model.addAttribute("paises", Paises.values());
         return "Views/Usuario/formulario_usuario";
     }
 
@@ -35,6 +42,8 @@ public class UsuarioController {
     @PostMapping("/guardar")
     public String guardarUsuario(@ModelAttribute Usuario usuario) {
         usuarioService.guardarUsuario(usuario);
+        auditoriaService.registrar("CREAR", "Usuario", usuario.getId(),
+            "Usuario creado: " + usuario.getEmail());
         return "redirect:/usuarios/listar";
     }
 
@@ -64,6 +73,7 @@ public class UsuarioController {
             return "redirect:/usuarios/listar";
         }
         model.addAttribute("usuario", usuario.get());
+        model.addAttribute("paises", Paises.values());
         return "Views/Usuario/editar_usuario";
     }
 
@@ -72,6 +82,8 @@ public class UsuarioController {
     public String actualizarUsuario(@PathVariable Long id, @ModelAttribute Usuario usuario) {
         usuario.setId(id);
         usuarioService.guardarUsuario(usuario);
+        auditoriaService.registrar("EDITAR", "Usuario", id,
+            "Usuario editado: " + usuario.getEmail());
         return "redirect:/usuarios/" + id;
     }
 
@@ -79,6 +91,7 @@ public class UsuarioController {
     @GetMapping("/{id}/eliminar")
     public String eliminarUsuario(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
+        auditoriaService.registrar("ELIMINAR", "Usuario", id, "Usuario eliminado");
         return "redirect:/usuarios/listar";
     }
 }

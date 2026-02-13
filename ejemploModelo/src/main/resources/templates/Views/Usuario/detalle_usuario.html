@@ -1,54 +1,63 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle Usuario</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
+
 <body>
-<div class="container">
-    <div class="header">
-        <h1>Detalle del Usuario</h1>
-        <p>Información del usuario: <strong th:text="${usuario.email}"></strong></p>
+    <div class="container">
+        <div class="header">
+            <h1>Detalle del Usuario</h1>
+            <p>Información del usuario: <strong th:text="${usuario.email}"></strong></p>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-item">
+                <label>ID:</label>
+                <span th:text="${usuario.id}"></span>
+            </div>
+
+            <div class="detail-item">
+                <label>Email:</label>
+                <span th:text="${usuario.email}"></span>
+            </div>
+
+            <div class="detail-item"> 
+                <label>País:</label> 
+                <span th:text="${usuario.pais}"></span> 
+            </div>
+
+            <div class="detail-item">
+                <label>Estado:</label>
+                <span th:text="${usuario.activo} ? 'Activo' : 'Inactivo'" class="status"
+                    th:classappend="${usuario.activo} ? 'active' : 'inactive'"></span>
+            </div>
+
+            <div th:if="${usuario.perfiles != null and usuario.perfiles.size() > 0}">
+                <label>Perfiles Asociados:</label>
+                <ul>
+                    <li th:each="perfil : ${usuario.perfiles}">
+                        <span th:text="${perfil.nombre} + ' ' + ${perfil.apellido}"></span>
+                    </li>
+                </ul>
+            </div>
+
+            <div th:if="${usuario.perfiles == null or usuario.perfiles.size() == 0}" class="empty-state">
+                <p>Este usuario no tiene perfiles asignados.</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a th:href="@{/usuarios/{id}/editar(id=${usuario.id})}" class="btn btn-primary">✎ Editar</a>
+            <a th:href="@{/usuarios/{id}/eliminar(id=${usuario.id})}" class="btn btn-danger"
+                onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+            <a href="/usuarios/listar" class="btn btn-secondary">← Volver a Lista</a>
+        </div>
     </div>
-
-    <div class="detail-section">
-        <div class="detail-item">
-            <label>ID:</label>
-            <span th:text="${usuario.id}"></span>
-        </div>
-
-        <div class="detail-item">
-            <label>Email:</label>
-            <span th:text="${usuario.email}"></span>
-        </div>
-
-        <div class="detail-item">
-            <label>Estado:</label>
-            <span th:text="${usuario.activo} ? 'Activo' : 'Inactivo'" 
-                  class="status" th:classappend="${usuario.activo} ? 'active' : 'inactive'"></span>
-        </div>
-
-        <div th:if="${usuario.perfiles != null and usuario.perfiles.size() > 0}">
-            <label>Perfiles Asociados:</label>
-            <ul>
-                <li th:each="perfil : ${usuario.perfiles}">
-                    <span th:text="${perfil.nombre} + ' ' + ${perfil.apellido}"></span>
-                </li>
-            </ul>
-        </div>
-
-        <div th:if="${usuario.perfiles == null or usuario.perfiles.size() == 0}" class="empty-state">
-            <p>Este usuario no tiene perfiles asignados.</p>
-        </div>
-    </div>
-
-    <div class="form-actions">
-        <a th:href="@{/usuarios/{id}/editar(id=${usuario.id})}" class="btn btn-primary">✎ Editar</a>
-        <a th:href="@{/usuarios/{id}/eliminar(id=${usuario.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
-        <a href="/usuarios/listar" class="btn btn-secondary">← Volver a Lista</a>
-    </div>
-</div>
 </body>
+
 </html>

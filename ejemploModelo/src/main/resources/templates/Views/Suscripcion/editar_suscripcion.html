@@ -1,64 +1,235 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Suscripción</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+            padding: 0 1rem;
+        }
+        .plan-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #2563eb;
+        }
+        .plan-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+        }
+        .plan-card.current {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        .current-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+        .plan-price-currency {
+            font-size: 1.2rem;
+            vertical-align: super;
+        }
+        .plan-duration {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .select-plan-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+        .select-plan-btn:hover {
+            background: #1e40af;
+        }
+        .plan-card.current .select-plan-btn {
+            background: #10b981;
+        }
+        .plan-card.selected .select-plan-btn {
+            background: #10b981;
+        }
+        .plan-card.selected .select-plan-btn:after {
+            content: " ✓";
+        }
+        .current-plan-info {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>Editar Suscripción</h1>
-        <p>Actualiza la información de la suscripción</p>
+        <h1 sec:authorize="hasRole('ADMIN')">Editar Suscripción</h1>
+        <h1 sec:authorize="hasRole('USER')">Cambia tu Plan</h1>
+        <p sec:authorize="hasRole('ADMIN')">Actualiza la información de la suscripción</p>
+        <p sec:authorize="hasRole('USER')">Selecciona un nuevo plan para tu suscripción</p>
     </div>
 
-    <form th:action="@{/suscripciones/{id}/actualizar(id=${suscripcion.id})}" th:object="${suscripcion}" method="post">
-        <div class="form-group">
-            <label for="usuario">Usuario Asociado:</label>
-            <select id="usuario" name="usuario" required>
-                <option value="">-- Selecciona un usuario --</option>
-                <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" 
-                        th:text="${usuario.email}"
-                        th:selected="${suscripcion.usuario != null and suscripcion.usuario.id == usuario.id}"></option>
-            </select>
-        </div>
+    <div th:if="${param.error}" style="background-color: #fee; border: 1px solid #c00; color: #c00; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <strong>⚠️ Error:</strong> No se pudo actualizar la suscripción. Verifica los datos.
+    </div>
 
-        <div class="form-group">
-            <label for="plan">Plan Asociado:</label>
-            <select id="plan" name="plan" required>
-                <option value="">-- Selecciona un plan --</option>
-                <option th:each="plan : ${planes}" th:value="${plan.id}" 
-                        th:text="${plan.nombre}"
-                        th:selected="${suscripcion.plan != null and suscripcion.plan.id == plan.id}"></option>
-            </select>
-        </div>
+    <!-- Plan Actual -->
+    <div class="current-plan-info" th:if="${suscripcion.plan != null}">
+        <h3 style="color: #10b981; margin-bottom: 0.5rem;">✓ Tu Plan Actual</h3>
+        <p style="font-size: 1.2rem; font-weight: 600; color: #1e293b;" th:text="${suscripcion.plan.nombre}"></p>
+        <p style="color: #64748b;">
+            <span th:text="${suscripcion.plan.precio + '€'}"></span> - 
+            <span th:text="${suscripcion.plan.duracionMeses + ' meses'}"></span>
+        </p>
+    </div>
 
-        <div class="form-group">
-            <label for="estado">Estado:</label>
-            <select id="estado" th:field="*{estado}" required>
-                <option value="">-- Selecciona un estado --</option>
-                <option value="ACTIVA">Activa</option>
-                <option value="CANCELADA">Cancelada</option>
-                <option value="MOROSA">Morosa</option>
-            </select>
-        </div>
+    <!-- Usuario (solo admin) -->
+    <div class="form-group" sec:authorize="hasRole('ADMIN')" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <label for="usuario-admin" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Usuario:</label>
+        <select id="usuario-admin" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem;">
+            <option value="">-- Selecciona un usuario --</option>
+            <option th:each="u : ${usuarios}" th:value="${u.id}" 
+                    th:text="${u.email + ' (' + u.rol + ')'}" th:if="${usuarios != null}"
+                    th:selected="${suscripcion.usuario != null and suscripcion.usuario.id == u.id}"></option>
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label for="fechaInicio">Fecha Inicio:</label>
-            <input type="date" id="fechaInicio" th:field="*{fechaInicio}" required>
-        </div>
+    <!-- Info Usuario Normal -->
+    <div sec:authorize="hasRole('USER')" style="background: #e0f2fe; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; color: #0c4a6e;">
+        👤 Cambiando plan para tu cuenta
+    </div>
 
-        <div class="form-group">
-            <label for="fechaFin">Fecha Fin:</label>
-            <input type="date" id="fechaFin" th:field="*{fechaFin}">
+    <!-- Tarjetas de Planes -->
+    <div class="plans-container">
+        <div class="plan-card" 
+             th:each="plan : ${planes}" 
+             th:data-plan-id="${plan.id}" 
+             th:data-duracion="${plan.duracionMeses}"
+             th:classappend="${suscripcion.plan != null and suscripcion.plan.id == plan.id} ? 'current' : ''">
+            <span class="current-badge" th:if="${suscripcion.plan != null and suscripcion.plan.id == plan.id}">Plan Actual</span>
+            <div class="plan-name" th:text="${plan.nombre}"></div>
+            <div class="plan-price">
+                <span class="plan-price-currency">€</span><span th:text="${plan.precio}"></span>
+            </div>
+            <div class="plan-duration" th:text="${plan.duracionMeses + ' meses'}"></div>
+            <button type="button" class="select-plan-btn" onclick="selectPlan(this)"
+                    th:text="${suscripcion.plan != null and suscripcion.plan.id == plan.id} ? 'Mantener Plan' : 'Cambiar a Este'">
+            </button>
         </div>
+    </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">✓ Guardar Cambios</button>
-            <a th:href="@{/suscripciones/{id}(id=${suscripcion.id})}" class="btn btn-secondary">← Cancelar</a>
-        </div>
+    <!-- Formulario oculto -->
+    <form id="suscripcion-form" th:action="@{/suscripciones/{id}/actualizar(id=${suscripcion.id})}" method="post" style="display: none;">
+        <input type="hidden" id="usuario" name="usuario">
+        <input type="hidden" id="plan" name="plan" required>
+        <input type="hidden" id="estado" name="estado" th:value="${suscripcion.estado}">
+        <input type="hidden" id="fechaInicio" name="fechaInicio" th:value="${suscripcion.fechaInicio}">
+        <input type="hidden" id="fechaFin" name="fechaFin">
+        <input type="hidden" id="renovacionAutomatica" name="renovacionAutomatica" th:value="${suscripcion.renovacionAutomatica}">
     </form>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
 </div>
+
+<script>
+    const currentPlanId = '[[${suscripcion.plan != null ? suscripcion.plan.id : ""}]]';
+    
+    function selectPlan(button) {
+        const card = button.closest('.plan-card');
+        const planId = card.dataset.planId;
+        const duracionMeses = parseInt(card.dataset.duracion);
+        
+        // Si es el plan actual, solo cerrar
+        if (planId === currentPlanId) {
+            return;
+        }
+        
+        // Remover selección previa
+        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+        
+        // Marcar como seleccionado
+        card.classList.add('selected');
+        
+        // Actualizar formulario oculto
+        document.getElementById('plan').value = planId;
+        
+        // Obtener usuario si es admin
+        const usuarioAdmin = document.getElementById('usuario-admin');
+        if (usuarioAdmin) {
+            const usuarioId = usuarioAdmin.value;
+            if (!usuarioId) {
+                alert('⚠️ Por favor selecciona un usuario primero');
+                card.classList.remove('selected');
+                return;
+            }
+            document.getElementById('usuario').value = usuarioId;
+        }
+        
+        // Confirmar cambio
+        if (confirm('¿Deseas cambiar a este plan? La suscripción se actualizará inmediatamente.')) {
+            // Calcular nueva fecha fin
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            if (fechaInicio) {
+                const inicio = new Date(fechaInicio);
+                const fechaFin = new Date(inicio);
+                fechaFin.setMonth(fechaFin.getMonth() + duracionMeses);
+                document.getElementById('fechaFin').value = fechaFin.toISOString().split('T')[0];
+            }
+            
+            // Enviar formulario
+            setTimeout(() => {
+                document.getElementById('suscripcion-form').submit();
+            }, 300);
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+</script>
 </body>
 </html>

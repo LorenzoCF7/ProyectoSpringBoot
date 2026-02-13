@@ -1,94 +1,184 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Suscripción</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+            padding: 0 1rem;
+        }
+        .plan-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #2563eb;
+        }
+        .plan-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+        }
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+        .plan-price-currency {
+            font-size: 1.2rem;
+            vertical-align: super;
+        }
+        .plan-duration {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .select-plan-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+        .select-plan-btn:hover {
+            background: #1e40af;
+        }
+        .plan-card.selected .select-plan-btn {
+            background: #10b981;
+        }
+        .plan-card.selected .select-plan-btn:after {
+            content: " ✓";
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>Nueva Suscripción</h1>
-        <p>Completa el formulario para crear una nueva suscripción</p>
+        <h1>Elige tu Plan de Suscripción</h1>
+        <p>Selecciona el plan que mejor se adapte a tus necesidades</p>
     </div>
 
-    <form th:action="@{/suscripciones/guardar}" th:object="${suscripcion}" method="post">
-        <div class="form-group">
-            <label for="usuario">Usuario Asociado:</label>
-            <select id="usuario" name="usuario" required>
-                <option value="">-- Selecciona un usuario --</option>
-                <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.email}"></option>
-            </select>
-        </div>
+    <div th:if="${param.error}" style="background-color: #fee; border: 1px solid #c00; color: #c00; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <strong>⚠️ Error:</strong> No se pudo crear la suscripción. Verifica los datos.
+    </div>
+    
+    <div th:if="${param.already_exists}" style="background-color: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <strong>ℹ️ Información:</strong> Ya tienes una suscripción activa. Puedes editarla a continuación.
+    </div>
 
-        <div class="form-group">
-            <label for="plan">Plan Asociado:</label>
-            <select id="plan" name="plan" required>
-                <option value="" data-duracion="0">-- Selecciona un plan --</option>
-                <option th:each="plan : ${planes}" th:value="${plan.id}" 
-                        th:data-duracion="${plan.duracionMeses}"
-                        th:text="${plan.nombre + ' (' + plan.duracionMeses + ' meses - $' + plan.precio + ')'}"></option>
-            </select>
-        </div>
+    <!-- Admin: Selector de usuario -->
+    <div class="form-group" sec:authorize="hasRole('ADMIN')" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <label for="usuario-admin" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Usuario:</label>
+        <select id="usuario-admin" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem;">
+            <option value="">-- Selecciona un usuario --</option>
+            <option th:each="u : ${usuarios}" th:value="${u.id}" 
+                    th:text="${u.email + ' (' + u.rol + ')'}" th:if="${usuarios != null}"></option>
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label for="estado">Estado:</label>
-            <select id="estado" th:field="*{estado}" required>
-                <option value="">-- Selecciona un estado --</option>
-                <option value="ACTIVA">Activa</option>
-                <option value="CANCELADA">Cancelada</option>
-                <option value="MOROSA">Morosa</option>
-            </select>
-        </div>
+    <!-- Usuario normal: Información -->
+    <div sec:authorize="hasRole('USER')" style="background: #e0f2fe; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; color: #0c4a6e;">
+        👤 Esta suscripción se creará para tu cuenta
+    </div>
 
-        <div class="form-group">
-            <label for="fechaInicio">Fecha Inicio:</label>
-            <input type="date" id="fechaInicio" th:field="*{fechaInicio}" required>
-            <small style="color: #6b7280;">Fecha actual por defecto (puedes modificarla)</small>
+    <!-- Tarjetas de Planes -->
+    <div class="plans-container">
+        <div class="plan-card" th:each="plan : ${planes}" th:data-plan-id="${plan.id}" th:data-duracion="${plan.duracionMeses}">
+            <div class="plan-name" th:text="${plan.nombre}"></div>
+            <div class="plan-price">
+                <span class="plan-price-currency">€</span><span th:text="${plan.precio}"></span>
+            </div>
+            <div class="plan-duration" th:text="${plan.duracionMeses + ' meses'}"></div>
+            <button type="button" class="select-plan-btn" onclick="selectPlan(this)">Seleccionar Plan</button>
         </div>
+    </div>
 
-        <div class="form-group">
-            <label for="fechaFin">Fecha Fin:</label>
-            <input type="date" id="fechaFin" th:field="*{fechaFin}">
-            <small style="color: #6b7280;">Se calcula según la duración del plan (puedes modificarla)</small>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">✓ Guardar Suscripción</button>
-            <a href="/suscripciones/listar" class="btn btn-secondary">← Cancelar</a>
-        </div>
+    <!-- Formulario oculto -->
+    <form id="suscripcion-form" th:action="@{/suscripciones/guardar}" method="post" style="display: none;">
+        <input type="hidden" id="usuario" name="usuario">
+        <input type="hidden" id="plan" name="plan" required>
+        <input type="hidden" id="estado" name="estado" value="ACTIVA">
+        <input type="hidden" id="fechaInicio" name="fechaInicio">
+        <input type="hidden" id="fechaFin" name="fechaFin">
+        <input type="hidden" id="renovacionAutomatica" name="renovacionAutomatica" value="true">
     </form>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
 </div>
 
 <script>
-    // Establecer fecha de inicio como hoy
-    const fechaInicioInput = document.getElementById('fechaInicio');
-    const fechaFinInput = document.getElementById('fechaFin');
-    const planSelect = document.getElementById('plan');
+    let selectedPlanId = null;
     
-    // Función para formatear fecha a YYYY-MM-DD
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
-    
-    // Establecer fecha de inicio como hoy
-    const hoy = new Date();
-    fechaInicioInput.value = formatDate(hoy);
-    
-    // Calcular fecha fin cuando cambia el plan
-    planSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const duracionMeses = parseInt(selectedOption.dataset.duracion) || 0;
+    function selectPlan(button) {
+        const card = button.closest('.plan-card');
+        const planId = card.dataset.planId;
+        const duracionMeses = parseInt(card.dataset.duracion);
         
-        if (duracionMeses > 0) {
-            const fechaFin = new Date(hoy);
-            fechaFin.setMonth(fechaFin.getMonth() + duracionMeses);
-            fechaFinInput.value = formatDate(fechaFin);
-        } else {
-            fechaFinInput.value = '';
+        // Remover selección previa
+        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+        
+        // Marcar como seleccionado
+        card.classList.add('selected');
+        selectedPlanId = planId;
+        
+        // Actualizar formulario oculto
+        document.getElementById('plan').value = planId;
+        
+        // Obtener usuario si es admin
+        const usuarioAdmin = document.getElementById('usuario-admin');
+        if (usuarioAdmin) {
+            const usuarioId = usuarioAdmin.value;
+            if (!usuarioId) {
+                alert('⚠️ Por favor selecciona un usuario primero');
+                card.classList.remove('selected');
+                return;
+            }
+            document.getElementById('usuario').value = usuarioId;
         }
-    });
+        
+        // Calcular fechas
+        const hoy = new Date();
+        const fechaInicio = hoy.toISOString().split('T')[0];
+        const fechaFin = new Date(hoy);
+        fechaFin.setMonth(fechaFin.getMonth() + duracionMeses);
+        
+        document.getElementById('fechaInicio').value = fechaInicio;
+        document.getElementById('fechaFin').value = fechaFin.toISOString().split('T')[0];
+        
+        // Enviar formulario
+        setTimeout(() => {
+            document.getElementById('suscripcion-form').submit();
+        }, 300);
+    }
 </script>
 </body>
 </html>

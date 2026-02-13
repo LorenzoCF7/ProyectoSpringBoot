@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.example.ejemploModelo.Service.AuditoriaService;
 import com.example.ejemploModelo.Service.PlanService;
 
 @Controller
@@ -19,9 +20,11 @@ import com.example.ejemploModelo.Service.PlanService;
 public class PlanController {
 
     private final PlanService planService;
+    private final AuditoriaService auditoriaService;
 
-    public PlanController(PlanService planService) {
+    public PlanController(PlanService planService, AuditoriaService auditoriaService) {
         this.planService = planService;
+        this.auditoriaService = auditoriaService;
     }
 
     // Mostrar formulario
@@ -35,6 +38,8 @@ public class PlanController {
     @PostMapping("/guardar")
     public String guardarPlan(@ModelAttribute Plan plan) {
         planService.guardarPlan(plan);
+        auditoriaService.registrar("CREAR", "Plan", plan.getId(),
+            "Plan creado: " + plan.getNombre());
         return "redirect:/planes/listar";
     }
 
@@ -72,6 +77,8 @@ public class PlanController {
     public String actualizarPlan(@PathVariable Long id, @ModelAttribute Plan plan) {
         plan.setId(id);
         planService.guardarPlan(plan);
+        auditoriaService.registrar("EDITAR", "Plan", id,
+            "Plan editado: " + plan.getNombre());
         return "redirect:/planes/" + id;
     }
 
@@ -79,6 +86,7 @@ public class PlanController {
     @GetMapping("/{id}/eliminar")
     public String eliminarPlan(@PathVariable Long id) {
         planService.eliminarPlan(id);
+        auditoriaService.registrar("ELIMINAR", "Plan", id, "Plan eliminado");
         return "redirect:/planes/listar";
     }
 }

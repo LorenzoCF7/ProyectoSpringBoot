@@ -26,7 +26,22 @@
 
         <div class="detail-item">
             <label>Monto:</label>
-            <span th:text="'$' + ${#numbers.formatDecimal(factura.monto, 1, 2)}"></span>
+            <span th:text="${#numbers.formatDecimal(factura.monto, 1, 2)} + '€'"></span>
+        </div>
+
+        <div class="detail-item" th:if="${factura.suscripcion != null and factura.suscripcion.usuario != null}">
+            <label>País del Usuario:</label>
+            <span th:text="${factura.suscripcion.usuario.pais}"></span>
+        </div>
+
+        <div class="detail-item" th:if="${factura.impuesto != null}" style="background-color: #f0f9ff; padding: 10px; border-radius: 5px; border-left: 4px solid #3b82f6;">
+            <label th:text="${descripcionImpuesto != null ? descripcionImpuesto : 'Impuesto'}"></label>
+            <span th:text="${#numbers.formatDecimal(factura.impuesto, 1, 2)} + '€'" style="font-weight: bold; color: #1e40af;"></span>
+        </div>
+
+        <div class="detail-item" th:if="${factura.montoConImpuesto != null}" style="font-weight: bold; border-top: 2px solid #ddd; padding-top: 15px; margin-top: 15px; background-color: #f9fafb; padding: 15px; border-radius: 5px; border-left: 4px solid #059669;">
+            <label>Monto Total (con impuestos):</label>
+            <span th:text="${#numbers.formatDecimal(factura.montoConImpuesto, 1, 2)} + '€'" style="font-size: 1.2em; color: #059669;"></span>
         </div>
 
         <div class="detail-item">
@@ -42,7 +57,7 @@
 
         <div class="detail-item" th:if="${factura.suscripcion != null}">
             <label>Suscripción Asociada:</label>
-            <span th:text="${factura.suscripcion.usuario.email} + ' - ' + ${factura.suscripcion.plan.nombre}"></span>
+            <span th:text="${(factura.suscripcion.usuario != null ? factura.suscripcion.usuario.email : 'N/A') + ' - ' + (factura.suscripcion.plan != null ? factura.suscripcion.plan.nombre : 'N/A')}"></span>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +23,8 @@
                 <option th:each="suscripcion : ${suscripciones}" 
                         th:value="${suscripcion.id}" 
                         th:data-precio="${suscripcion.plan != null ? suscripcion.plan.precio : 0}"
-                        th:text="${'ID: ' + suscripcion.id + ' - Usuario: ' + (suscripcion.usuario != null ? suscripcion.usuario.email : 'N/A') + ' - Plan: ' + (suscripcion.plan != null ? suscripcion.plan.nombre + ' ($' + suscripcion.plan.precio + ')' : 'N/A')}"></option>
+                        th:data-pais="${suscripcion.usuario != null ? suscripcion.usuario.pais : 'ESPAÑA'}"
+                        th:text="${'ID: ' + suscripcion.id + ' - Usuario: ' + (suscripcion.usuario != null ? suscripcion.usuario.email : 'N/A') + ' - Plan: ' + (suscripcion.plan != null ? suscripcion.plan.nombre + ' (' + suscripcion.plan.precio + '€)' : 'N/A')}"></option>
             </select>
         </div>
 
@@ -37,17 +39,40 @@
             <small style="color: #6b7280;">Se autocompleta según el precio del plan (puedes modificarlo)</small>
         </div>
 
+        <div class="form-group" id="impuestoSection" style="display: none; background-color: #f0f9ff; padding: 10px; border-radius: 5px; border-left: 4px solid #3b82f6;">
+            <label>Resumen de Impuestos:</label>
+            <div style="margin-top: 8px; font-size: 0.95em;">
+                <div><strong>País:</strong> <span id="paisDisplay"></span></div>
+                <div><strong>Tipo de Impuesto:</strong> <span id="tipoImpuestoDisplay"></span></div>
+                <div><strong>Monto Base:</strong> <span id="montoBaseDisplay">0.00</span>€</div>
+                <div style="border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 8px;"><strong style="color: #1e40af;">Monto Total (con impuestos):</strong> <span id="montoTotalDisplay" style="font-size: 1.1em; color: #1e40af;">0.00</span>€</div>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="fechaEmision">Fecha de Emisión:</label>
             <input type="date" id="fechaEmision" th:field="*{fechaEmision}" required>
             <small style="color: #6b7280;">Fecha actual por defecto (puedes modificarla)</small>
         </div>
 
-        <div class="form-group">
+        <!-- Solo administradores pueden marcar manualmente como pagada -->
+        <div class="form-group" sec:authorize="hasRole('ADMIN')">
             <label for="pagada">
                 <input type="checkbox" id="pagada" th:field="*{pagada}">
-                Factura Pagada
+                Factura Pagada (marcar manualmente)
             </label>
+            <small style="color: #6b7280; display: block; margin-top: 5px;">
+                ℹ️ Las facturas se marcan automáticamente como pagadas cuando se registra un pago.
+            </small>
+        </div>
+
+        <!-- Info para usuarios normales -->
+        <div class="form-group" sec:authorize="hasRole('USER')" style="background-color: #eff6ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <strong>💳 ¿Cómo marcar como pagada?</strong>
+            <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.9em;">
+                Las facturas se marcan automáticamente como pagadas cuando registras un pago. <br>
+                Después de crear esta factura, ve a <a href="/pagos/nuevo" style="color: #2563eb; text-decoration: underline;">Registrar Pago</a>.
+            </p>
         </div>
 
         <div class="form-actions">
@@ -58,14 +83,51 @@
 </div>
 
 <script>
-    // Establecer fecha de emisión como hoy
+    // Tasas de impuesto por país
+    const tasasImpuesto = {
+        'ESPAÑA': { tasa: 21.0, tipo: 'IVA' },
+        'FRANCIA': { tasa: 20.0, tipo: 'TVA' },
+        'ALEMANIA': { tasa: 19.0, tipo: 'MwSt' },
+        'ITALIA': { tasa: 22.0, tipo: 'IVA' },
+        'PORTUGAL': { tasa: 23.0, tipo: 'IVA' },
+        'REINO_UNIDO': { tasa: 20.0, tipo: 'VAT' }
+    };
+
     const fechaEmisionInput = document.getElementById('fechaEmision');
     const montoInput = document.getElementById('monto');
     const suscripcionSelect = document.getElementById('suscripcion');
+    const impuestoSection = document.getElementById('impuestoSection');
     
     // Función para formatear fecha a YYYY-MM-DD
     function formatDate(date) {
         return date.toISOString().split('T')[0];
+    }
+    
+    // Calcular impuestos
+    function calcularImpuestos() {
+        const selectedOption = suscripcionSelect.options[suscripcionSelect.selectedIndex];
+        const suscripcionId = selectedOption.value;
+        
+        if (!suscripcionId) {
+            impuestoSection.style.display = 'none';
+            return;
+        }
+        
+        // Obtener información de la suscripción desde atributos data
+        const pais = selectedOption.dataset.pais || 'ESPAÑA';
+        const monto = parseFloat(montoInput.value) || 0;
+        
+        const impuestoInfo = tasasImpuesto[pais] || { tasa: 21.0, tipo: 'IVA' };
+        const montoImpuesto = monto * (impuestoInfo.tasa / 100);
+        const montoTotal = monto + montoImpuesto;
+        
+        // Actualizar vista
+        document.getElementById('paisDisplay').textContent = pais;
+        document.getElementById('tipoImpuestoDisplay').textContent = impuestoInfo.tipo + ' ' + impuestoInfo.tasa.toFixed(1) + '%';
+        document.getElementById('montoBaseDisplay').textContent = monto.toFixed(2);
+        document.getElementById('montoTotalDisplay').textContent = montoTotal.toFixed(2);
+        
+        impuestoSection.style.display = 'block';
     }
     
     // Establecer fecha de emisión como hoy
@@ -77,6 +139,12 @@
         const selectedOption = this.options[this.selectedIndex];
         const precio = parseFloat(selectedOption.dataset.precio) || 0;
         montoInput.value = precio.toFixed(2);
+        calcularImpuestos();
+    });
+    
+    // Actualizar cálculo cuando cambia el monto
+    montoInput.addEventListener('input', function() {
+        calcularImpuestos();
     });
 </script>
 </body>

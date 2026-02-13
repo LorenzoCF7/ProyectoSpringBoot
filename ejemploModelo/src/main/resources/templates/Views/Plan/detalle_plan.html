@@ -31,7 +31,7 @@
 
         <div class="detail-item">
             <label>Precio:</label>
-            <span th:text="'$' + ${#numbers.formatDecimal(plan.precio, 1, 2)}"></span>
+            <span th:text="${#numbers.formatDecimal(plan.precio, 1, 2)} + '€'"></span>
         </div>
 
         <div class="detail-item">

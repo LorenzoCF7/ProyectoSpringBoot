@@ -19,6 +19,31 @@
         <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
     </div>
 
+    <!-- Formulario de Filtrado -->
+    <div class="filter-section" style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3b82f6;">
+        <h3 style="margin-top: 0; color: #1f2937;">🔍 Filtrar Facturas</h3>
+        <form method="get" th:action="@{/facturas/listar}" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="fechaInicio" style="font-weight: 500; font-size: 0.9em; color: #374151;">📅 Fecha Inicio:</label>
+                <input type="date" id="fechaInicio" name="fechaInicio" th:value="${fechaInicio}">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="fechaFin" style="font-weight: 500; font-size: 0.9em; color: #374151;">📅 Fecha Fin:</label>
+                <input type="date" id="fechaFin" name="fechaFin" th:value="${fechaFin}">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="montoMin" style="font-weight: 500; font-size: 0.9em; color: #374151;">💰 Monto Mín:</label>
+                <input type="number" id="montoMin" name="montoMin" th:value="${montoMin}" step="0.01" placeholder="Ej: 10.00" style="width: 120px;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="montoMax" style="font-weight: 500; font-size: 0.9em; color: #374151;">💰 Monto Máx:</label>
+                <input type="number" id="montoMax" name="montoMax" th:value="${montoMax}" step="0.01" placeholder="Ej: 100.00" style="width: 120px;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="min-height: 38px;">🔍 Filtrar</button>
+            <a href="/facturas/listar" class="btn btn-secondary" style="min-height: 38px;">✕ Limpiar</a>
+        </form>
+    </div>
+
     <div class="lista-section">
         <h2>Facturas Registradas</h2>
         <div th:if="${facturas != null and facturas.size() > 0}">
@@ -28,6 +53,8 @@
                         <th>ID</th>
                         <th>Descripción</th>
                         <th>Monto</th>
+                        <th>Impuesto</th>
+                        <th>Total</th>
                         <th>Fecha Emisión</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -37,17 +64,19 @@
                     <tr th:each="factura : ${facturas}">
                         <td th:text="${factura.id}"></td>
                         <td th:text="${factura.descripcion}"></td>
-                        <td th:text="'$' + ${#numbers.formatDecimal(factura.monto, 1, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(factura.monto, 1, 2)} + '€'"></td>
+                        <td th:text="${factura.impuesto != null ? #numbers.formatDecimal(factura.impuesto, 1, 2) + '€' : '-'}"></td>
+                        <td th:text="${factura.montoConImpuesto != null ? #numbers.formatDecimal(factura.montoConImpuesto, 1, 2) + '€' : #numbers.formatDecimal(factura.monto, 1, 2) + '€'}" style="font-weight: bold;"></td>
                         <td th:text="${factura.fechaEmision}"></td>
                         <td>
                             <span class="status" th:classappend="${factura.pagada} ? 'active' : 'inactive'">
                                 <span th:text="${factura.pagada} ? '✓ Pagada' : '⏳ Pendiente'"></span>
                             </span>
                         </td>
-                        <td>
-                            <a th:href="@{/facturas/{id}(id=${factura.id})}" class="btn btn-sm btn-info">👁 Ver</a>
-                            <a th:href="@{/facturas/{id}/editar(id=${factura.id})}" class="btn btn-sm btn-primary">✎ Editar</a>
-                            <a th:href="@{/facturas/{id}/eliminar(id=${factura.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
+                        <td style="display: flex; gap: 5px;">
+                            <a th:href="|/facturas/${factura.id}|" class="btn btn-sm btn-info">👁 Ver</a>
+                            <a th:href="|/facturas/${factura.id}/editar|" class="btn btn-sm btn-primary">✎ Editar</a>
+                            <a th:href="|/facturas/${factura.id}/eliminar|" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
                         </td>
                     </tr>
                 </tbody>

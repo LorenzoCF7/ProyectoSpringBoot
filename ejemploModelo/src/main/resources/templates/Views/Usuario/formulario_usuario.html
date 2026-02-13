@@ -24,6 +24,14 @@
             <input type="password" id="password" th:field="*{password}" placeholder="Ingrese la contraseña" required>
         </div>
 
+        <div class="form-group"> 
+            <label for="pais">País:</label>
+            <select id="pais" th:field="*{pais}" required>
+                <option value="">-- Selecciona un país --</option>
+                <option th:each="pais : ${paises}" th:value="${pais}" th:text="${pais}"></option> 
+            </select>
+        </div>
+
         <div class="form-group">
             <label for="activo">
                 <input type="checkbox" id="activo" th:field="*{activo}">

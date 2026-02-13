@@ -1,4 +1,5 @@
 package com.example.ejemploModelo.Models;
+
 import java.time.LocalDate;
 
 import org.hibernate.envers.Audited;
@@ -11,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+
 @Audited
 @Entity
 public class Suscripcion {
@@ -22,14 +25,19 @@ public class Suscripcion {
     private LocalDate fechaInicio;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaFin;
-    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
-    @JoinColumn(name = "usuario_id", nullable = true)
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Usuario usuario;
+
     @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
     @JoinColumn(name = "plan_id", nullable = true)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Plan plan;
+
+    // Nuevo: flag para renovación automática
+    private boolean renovacionAutomatica;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -43,4 +51,7 @@ public class Suscripcion {
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
     public Plan getPlan() { return plan; }
     public void setPlan(Plan plan) { this.plan = plan; }
+    public boolean isRenovacionAutomatica() { return renovacionAutomatica; }
+    public void setRenovacionAutomatica(boolean renovacionAutomatica) { this.renovacionAutomatica = renovacionAutomatica; }
+
 }

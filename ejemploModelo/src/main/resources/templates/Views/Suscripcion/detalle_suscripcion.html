@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,18 @@
     <div class="header">
         <h1>Detalle de la Suscripción</h1>
         <p>ID: <strong th:text="${suscripcion.id}"></strong></p>
+    </div>
+
+    <div th:if="${param.success == 'cancelled'}" style="background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <strong>✓ Éxito:</strong> Suscripción cancelada correctamente.
+    </div>
+
+    <div th:if="${param.success == 'reactivated'}" style="background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <strong>✓ Éxito:</strong> Suscripción reactivada correctamente.
+    </div>
+
+    <div th:if="${param.error}" style="background-color: #fee; border: 1px solid #c00; color: #c00; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <strong>⚠️ Error:</strong> No se pudo completar la operación.
     </div>
 
     <div class="detail-section">
@@ -45,12 +58,55 @@
             <label>Fecha de Fin:</label>
             <span th:text="${suscripcion.fechaFin != null} ? ${suscripcion.fechaFin} : 'No definida'"></span>
         </div>
+
+        <div class="detail-item">
+            <label>Renovación Automática:</label>
+            <span th:text="${suscripcion.renovacionAutomatica} ? 'Sí' : 'No'"></span>
+        </div>
+    </div>
+
+    <!-- Alerta si está cancelada -->
+    <div th:if="${suscripcion.estado.name() == 'CANCELADA'}" style="background-color: #fef3c7; border: 2px solid #f59e0b; padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+        <strong style="color: #92400e;">⚠️ Esta suscripción ha sido cancelada</strong>
+        <p style="color: #92400e; margin: 0.5rem 0 0 0;">No se renovará automáticamente al finalizar el periodo.</p>
     </div>
 
     <div class="form-actions">
-        <a th:href="@{/suscripciones/{id}/editar(id=${suscripcion.id})}" class="btn btn-primary">✎ Editar</a>
-        <a th:href="@{/suscripciones/{id}/eliminar(id=${suscripcion.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">🗑 Eliminar</a>
-        <a href="/suscripciones/listar" class="btn btn-secondary">← Volver a Lista</a>
+        <!-- Editar (solo si está activa) -->
+        <a th:if="${suscripcion.estado.name() == 'ACTIVA'}" 
+           th:href="@{/suscripciones/{id}/editar(id=${suscripcion.id})}" 
+           class="btn btn-primary">✎ Editar</a>
+        
+        <!-- Cancelar (solo usuarios con suscripción activa) -->
+        <form th:if="${suscripcion.estado.name() == 'ACTIVA'}" 
+              th:action="@{/suscripciones/{id}/cancelar(id=${suscripcion.id})}" 
+              method="post" 
+              style="display: inline;" 
+              onsubmit="return confirm('¿Estás seguro de cancelar tu suscripción?');">
+            <button type="submit" class="btn" style="background: #f59e0b; color: white;">✖ Cancelar Suscripción</button>
+        </form>
+        
+        <!-- Reactivar (solo si está cancelada) -->
+        <form th:if="${suscripcion.estado.name() == 'CANCELADA'}" 
+              th:action="@{/suscripciones/{id}/reactivar(id=${suscripcion.id})}" 
+              method="post" 
+              style="display: inline;" 
+              onsubmit="return confirm('¿Deseas reactivar tu suscripción?');">
+            <button type="submit" class="btn btn-success">✓ Reactivar Suscripción</button>
+        </form>
+        
+        <!-- Eliminar (solo admin) -->
+        <a sec:authorize="hasRole('ADMIN')" 
+           th:href="@{/suscripciones/{id}/eliminar(id=${suscripcion.id})}" 
+           class="btn btn-danger" 
+           onclick="return confirm('¿Estás seguro de eliminar esta suscripción?')">🗑 Eliminar</a>
+        
+        <!-- Ver Historial (todos pueden ver su propio historial) -->
+        <a th:href="@{/suscripciones/{id}/historial(id=${suscripcion.id})}" 
+           class="btn" 
+           style="background: #667eea; color: white;">🔍 Ver Historial</a>
+        
+        <a href="/" class="btn btn-secondary">← Volver al Inicio</a>
     </div>
 </div>
 </body>
