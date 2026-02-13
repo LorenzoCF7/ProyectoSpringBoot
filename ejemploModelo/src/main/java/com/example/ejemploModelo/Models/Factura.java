@@ -10,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 
 @Entity
@@ -24,7 +24,7 @@ public class Factura {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaEmision;
     private boolean pagada;
-    @OneToOne(fetch = jakarta.persistence.FetchType.EAGER)
+    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
     @JoinColumn(name = "suscripcion_id", nullable = false)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Suscripcion suscripcion;
