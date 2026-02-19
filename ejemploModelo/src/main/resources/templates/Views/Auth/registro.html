@@ -3,49 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>Registro – Sistema de Gestión</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+            padding: 2rem 1rem;
+        }
+        .register-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+        .register-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .register-logo h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+        .register-logo p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        form { box-shadow: none; padding: 0; margin: 0; max-width: none; }
+        .password-hint {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+        }
+        .register-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        .btn-block { width: 100%; justify-content: center; padding: 0.875rem; }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="header" style="text-align: center;">
-        <h1>Crear Cuenta</h1>
+<div class="register-card">
+    <div class="register-logo">
+        <h1>🏢 Crear Cuenta</h1>
         <p>Regístrate en el Sistema de Gestión</p>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger">
-        <span th:text="${error}"></span>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        ⚠️ <span th:text="${error}"></span>
     </div>
 
     <form th:action="@{/registro}" th:object="${usuario}" method="post">
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" th:field="*{email}" placeholder="tu@email.com" required>
+            <label for="email">📧 Correo electrónico</label>
+            <input type="email" id="email" th:field="*{email}"
+                   placeholder="tu@email.com" required autocomplete="email">
         </div>
 
         <div class="form-group">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" th:field="*{password}" placeholder="Mínimo 4 caracteres" required>
+            <label for="password">🔒 Contraseña</label>
+            <input type="password" id="password" th:field="*{password}"
+                   placeholder="Mínimo 4 caracteres" required autocomplete="new-password">
+            <p class="password-hint">La contraseña debe tener al menos 4 caracteres.</p>
         </div>
 
         <div class="form-group">
-            <label for="confirmPassword">Confirmar Contraseña</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repite la contraseña" required>
+            <label for="confirmPassword">🔒 Confirmar contraseña</label>
+            <input type="password" id="confirmPassword" name="confirmPassword"
+                   placeholder="Repite la contraseña" required autocomplete="new-password">
         </div>
 
         <div class="form-group">
-            <label for="pais">País</label>
+            <label for="pais">🌍 País</label>
             <select id="pais" th:field="*{pais}" required>
-                <option value="">-- Selecciona un país --</option>
-                <option th:each="p : ${paises}" th:value="${p}" th:text="${p}"></option>
+                <option value="">-- Selecciona tu país --</option>
+                <option th:each="p : ${paises}" th:value="${p}"
+                        th:text="${p == 'ES' ? '🇪🇸 España' :
+                                   p == 'FR' ? '🇫🇷 Francia' :
+                                   p == 'DE' ? '🇩🇪 Alemania' :
+                                   p == 'IT' ? '🇮🇹 Italia' :
+                                   p == 'PT' ? '🇵🇹 Portugal' :
+                                   p == 'UK' ? '🇬🇧 Reino Unido' : p}">
+                </option>
             </select>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">Registrarse</button>
-            <a th:href="@{/login}" class="btn btn-secondary">Ya tengo cuenta</a>
+        <div class="form-actions" style="flex-direction:column; gap:0.75rem; margin-top:1.5rem;">
+            <button type="submit" class="btn btn-success btn-block">✅ Crear cuenta</button>
+            <a th:href="@{/login}" class="btn btn-secondary btn-block" style="text-align:center;">
+                ← Ya tengo cuenta
+            </a>
         </div>
     </form>
+
+    <div class="register-footer">
+        Al registrarte aceptas nuestros <a href="#">términos y condiciones</a>.
+    </div>
 </div>
 </body>
 </html>

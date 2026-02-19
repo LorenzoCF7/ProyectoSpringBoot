@@ -1,6 +1,7 @@
 package com.example.ejemploModelo.Service;
 
 import com.example.ejemploModelo.Models.Paises;
+import java.util.Locale;
 
 public class TaxCalculator {
     // Tasas de impuestos por país (en porcentaje)
@@ -43,7 +44,7 @@ public class TaxCalculator {
     public static String obtenerDescripcionImpuesto(Paises pais) {
         double tasa = obtenerTasaImpuesto(pais);
         String tipoImpuesto = obtenerTipoImpuesto(pais);
-        return tipoImpuesto + " " + String.format("%.1f", tasa) + "%";
+        return tipoImpuesto + " " + String.format(Locale.ROOT, "%.1f", tasa) + "%";
     }
 
  

@@ -4,46 +4,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyecto Spring Boot</title>
+    <title>Dashboard – Sistema de Gestión</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
-<div class="container">
-    <div class="header" style="text-align: center;">
-        <h1>Sistema de Gestión</h1>
-        <p>Bienvenido, <span sec:authentication="name"></span></p>
-        <div style="margin-top: 1rem;">
-            <form th:action="@{/logout}" method="post" style="display: inline; background: none; box-shadow: none; padding: 0; margin: 0;">
-                <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
-            </form>
+
+<!-- Topbar -->
+<nav class="topbar">
+    <a href="/" class="topbar-brand">🏢 Gestión Pro</a>
+    <div class="topbar-user">
+        <span>👤 <strong sec:authentication="name"></strong></span>
+        <form th:action="@{/logout}" method="post" style="margin:0;padding:0;background:none;box-shadow:none;max-width:none;">
+            <button type="submit" class="btn btn-danger btn-sm">Salir</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container" style="margin-top:1.5rem;">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        🏠 <span>Inicio</span> <span class="breadcrumb-sep">/</span> <span>Dashboard</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header" style="text-align:center;">
+        <h1>Panel Principal</h1>
+        <p>Bienvenido al sistema de gestión de suscripciones</p>
+    </div>
+
+    <!-- ─── Menú de usuario ─────────────────── -->
+    <div class="lista-section">
+        <h2 style="margin-bottom:1rem;">📋 Mis Acciones</h2>
+        <div class="nav-buttons">
+            <a href="/perfiles/listar"          class="btn btn-primary">👤 Mis Perfiles</a>
+            <a href="/perfiles/nuevo"           class="btn btn-secondary">＋ Nuevo Perfil</a>
+            <a href="/suscripciones/mi-suscripcion" class="btn btn-primary">📅 Mi Suscripción</a>
+            <a href="/facturas/listar"          class="btn btn-primary">🧾 Mis Facturas</a>
+            <a href="/facturas/nuevo"           class="btn btn-secondary">＋ Nueva Factura</a>
+            <a href="/pagos/listar"             class="btn btn-primary">💳 Mis Pagos</a>
+            <a href="/pagos/nuevo"              class="btn btn-secondary">＋ Nuevo Pago</a>
         </div>
     </div>
 
-    <!-- Menú para usuarios normales -->
-    <div class="nav-buttons">
-        <a href="/perfiles/listar" class="btn btn-primary">Mis Perfiles</a>
-        <a href="/perfiles/nuevo" class="btn btn-secondary">Nuevo Perfil</a>
-        <a href="/suscripciones/mi-suscripcion" class="btn btn-primary">Gestionar Mi Suscripción</a>
-        <a href="/facturas/listar" class="btn btn-primary">Mis Facturas</a>
-        <a href="/facturas/nuevo" class="btn btn-secondary">Nueva Factura</a>
-        <a href="/pagos/listar" class="btn btn-primary">Mis Pagos</a>
-        <a href="/pagos/nuevo" class="btn btn-secondary">Nuevo Pago</a>
-    </div>
-
-    <!-- Menú solo para administradores -->
+    <!-- ─── Panel de Administración (solo ADMIN) ─── -->
     <div sec:authorize="hasAuthority('ROLE_ADMIN')">
-        <div class="lista-section" style="border-left: 4px solid var(--warning); margin-top: 1rem;">
-            <h2 style="color: var(--warning);">Panel de Administración</h2>
-            <div class="nav-buttons" style="margin-top: 1rem;">
-                <a href="/admin/auditoria" class="btn btn-info">Panel de Auditoría</a>
-                <a href="/usuarios/listar" class="btn btn-primary">Gestionar Usuarios</a>
-                <a href="/usuarios/nuevo" class="btn btn-secondary">Nuevo Usuario</a>
-                <a href="/planes/listar" class="btn btn-primary">Gestionar Planes</a>
-                <a href="/planes/nuevo" class="btn btn-secondary">Nuevo Plan</a>
+        <div class="lista-section" style="border-left: 4px solid var(--warning); margin-top: 1.5rem;">
+            <h2 style="color: var(--warning); margin-bottom:1rem;">⚙️ Administración</h2>
+            <div class="nav-buttons">
+                <a href="/admin/auditoria"  class="btn btn-info">🔍 Panel de Auditoría</a>
+                <a href="/usuarios/listar"  class="btn btn-primary">👥 Usuarios</a>
+                <a href="/usuarios/nuevo"   class="btn btn-secondary">＋ Nuevo Usuario</a>
+                <a href="/planes/listar"    class="btn btn-primary">📦 Planes</a>
+                <a href="/planes/nuevo"     class="btn btn-secondary">＋ Nuevo Plan</a>
             </div>
         </div>
     </div>
-    
+
 </div>
+
+<footer>
+    &copy; 2025 Gestión Pro &mdash; Sistema de Gestión de Suscripciones
+</footer>
+
 </body>
 </html>
