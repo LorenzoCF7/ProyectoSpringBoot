@@ -16,11 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * CP-AUTH-xx: Pruebas unitarias para AuthController.
- * Verifica validaciones del flujo de registro y login directamente
- * invocando los métodos del controlador (sin contexto Spring MVC completo).
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CP-AUTH: Controlador de Autenticación (Unit)")
 class AuthControllerTest {
@@ -38,10 +33,10 @@ class AuthControllerTest {
         model = new ExtendedModelMap();
     }
 
-    // ─── CP-AUTH-01: GET /login ──────────────────────────────────────────────
+    // GET /login
 
     @Test
-    @DisplayName("CP-AUTH-01a: GET /login sin parámetros retorna vista login")
+    @DisplayName("GET /login sin parámetros retorna vista login")
     void testGetLogin_sinParametros() {
         String vista = authController.mostrarLogin(null, null, null, model);
         assertEquals("Views/Auth/login", vista);
@@ -50,7 +45,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-01b: GET /login?error agrega atributo error al modelo")
+    @DisplayName("GET /login?error agrega atributo error al modelo")
     void testGetLogin_conError() {
         String vista = authController.mostrarLogin("true", null, null, model);
         assertEquals("Views/Auth/login", vista);
@@ -58,7 +53,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-01c: GET /login?logout agrega mensaje de cierre al modelo")
+    @DisplayName("GET /login?logout agrega mensaje de cierre al modelo")
     void testGetLogin_conLogout() {
         String vista = authController.mostrarLogin(null, "true", null, model);
         assertEquals("Views/Auth/login", vista);
@@ -66,17 +61,17 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-01d: GET /login?registro agrega mensaje de registro exitoso")
+    @DisplayName("GET /login?registro agrega mensaje de registro exitoso")
     void testGetLogin_conRegistroExitoso() {
         String vista = authController.mostrarLogin(null, null, "true", model);
         assertEquals("Views/Auth/login", vista);
         assertTrue(model.containsAttribute("mensaje"));
     }
 
-    // ─── CP-AUTH-02: GET /registro ───────────────────────────────────────────
+    // GET /registro
 
     @Test
-    @DisplayName("CP-AUTH-02: GET /registro retorna vista registro con atributos")
+    @DisplayName("GET /registro retorna vista registro con atributos")
     void testGetRegistro() {
         String vista = authController.mostrarRegistro(model);
         assertEquals("Views/Auth/registro", vista);
@@ -84,10 +79,10 @@ class AuthControllerTest {
         assertTrue(model.containsAttribute("paises"));
     }
 
-    // ─── CP-AUTH-03: POST /registro – validaciones ───────────────────────────
+    // POST /registro – validaciones
 
     @Test
-    @DisplayName("CP-AUTH-03a: POST registro con email null/vacío muestra error")
+    @DisplayName("POST /registro con email null/vacío muestra error")
     void testPostRegistro_emailVacio() {
         Usuario u = new Usuario();
         u.setEmail("");
@@ -101,7 +96,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-03b: POST registro con contraseña corta (< 4) muestra error")
+    @DisplayName("POST /registro con contraseña corta (< 4) muestra error")
     void testPostRegistro_contrasenaDemadiadoCorta() {
         Usuario u = new Usuario();
         u.setEmail("test@test.com");
@@ -115,7 +110,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-03c: POST registro cuando contraseñas no coinciden muestra error")
+    @DisplayName("POST /registro cuando contraseñas no coinciden muestra error")
     void testPostRegistro_contrasenasNoCoinciden() {
         Usuario u = new Usuario();
         u.setEmail("test@test.com");
@@ -129,7 +124,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-03d: POST registro con email duplicado muestra error")
+    @DisplayName("POST /registro con email duplicado muestra error")
     void testPostRegistro_emailDuplicado() {
         when(usuarioService.existeEmail("existente@test.com")).thenReturn(true);
 
@@ -145,7 +140,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("CP-AUTH-03e: POST registro exitoso redirige a /login?registro=true")
+    @DisplayName("POST /registro exitoso redirige a /login?registro=true")
     void testPostRegistro_exitoso() {
         when(usuarioService.existeEmail("nuevo@test.com")).thenReturn(false);
         when(usuarioService.registrarUsuario(any(Usuario.class)))
